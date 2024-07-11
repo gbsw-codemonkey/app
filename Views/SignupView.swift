@@ -15,7 +15,7 @@ struct SignupView: View {
             VStack {
                 
                 // AnimatedImage: Partying Face
-                AnimatedImage(url: URL(string: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Partying%20Face.png"))
+                AnimatedImage(url: URL(string: password != "" ? "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Peeking%20Eye.png" : "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Smiling%20Face%20with%20Sunglasses.png"))
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 107)

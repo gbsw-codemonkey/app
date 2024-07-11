@@ -4,7 +4,6 @@ import SDWebImageSwiftUI
 struct LoginView: View {
     @State private var username: String = ""
     @State private var password: String = ""
-    @State private var isFocusPW: Bool = false
     @State private var isLoginComplete: Bool = false
     
     var body: some View {
@@ -12,7 +11,7 @@ struct LoginView: View {
             VStack {
                 
                 // AnimatedImage: SmilingFace
-                AnimatedImage(url: URL(string: isFocusPW ? "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Peeking%20Eye.png" : "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Smiling%20Face%20with%20Sunglasses.png"))
+                AnimatedImage(url: URL(string: password != "" ? "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Peeking%20Eye.png" : "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Smiling%20Face%20with%20Sunglasses.png"))
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 107)
@@ -54,18 +53,12 @@ struct LoginView: View {
                     
                     SecureField(
                         "*******",
-                        text: $password,
-                        onCommit: {
-                            isFocusPW = false
-                        }
+                        text: $password
                     )
                     .frame(width: 250)
                     .padding(EdgeInsets(top: 20, leading: 50, bottom: 20, trailing: -10))
                     .background(Color(red: 241 / 255, green: 241 / 255, blue: 241 / 255))
                     .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .onChange(of: password) { _, _ in
-                        isFocusPW = true
-                    }
                 }
                 
             }
