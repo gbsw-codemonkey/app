@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct TopNavView: View {
     var body: some View {
@@ -29,7 +30,7 @@ struct TopNavView: View {
                         
                         NavigationLink(destination:
                                         ProfileView().navigationBarBackButtonHidden(true)) {
-                            Image("Profile")
+                            AnimatedImage(url: URL(string: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Smiling%20Face%20with%20Smiling%20Eyes.png"))
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(height: 44)

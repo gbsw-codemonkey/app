@@ -1,18 +1,14 @@
-//
-//  CreateLoadingView.swift
-//  CreativeLens
-//
-//  Created by Boseok Son on 7/11/24.
-//
-
 import SwiftUI
 import SDWebImageSwiftUI
+import Alamofire
 
 struct CreateLoadingView: View {
     
-    @State private var isComplete: Bool = false
-    @State private var progress = 0.0
-    let timer = Timer.publish(every: 0.005, on: .main, in: .common).autoconnect()
+    @Binding var prompt: String
+    @State private var videoURL: String?
+    @State private var navigateToNaming: Bool = false
+    
+    @AppStorage("TOKEN") private var token: String = ""
     
     var body: some View {
         VStack {
@@ -27,26 +23,40 @@ struct CreateLoadingView: View {
                 .font(.system(size: 20, weight: .bold))
                 .foregroundStyle(Color(red: 92 / 255, green: 138 / 255, blue: 255 / 255))
         }
-        .onReceive(timer) { _ in
-            if progress < 1 {
-                progress += 0.001
-                return
+        .navigationDestination(isPresented: $navigateToNaming) {
+            if let videoURL = videoURL {
+                CreateNamingView(videoURL: videoURL)
+                    .toolbar(.hidden)
             }
-            
-            progress = 1
-            isComplete = true
-        }
-        .navigationDestination(isPresented: $isComplete) {
-            CreateCompleteView()
-                .toolbar(.hidden)
         }
         .onAppear() {
-            
-            // Business Logic
+            createVideo()
         }
+    }
+    
+    func createVideo() {
+        let parameters: [String: String] = [
+            "prompt": prompt
+        ]
+        
+        AF.request("https://3650-34-34-69-107.ngrok-free.app/generate-video", method: .post, parameters: parameters, encoding: JSONEncoding.default)
+            .responseDecodable(of: VideoResponse.self) { response in
+                switch response.result {
+                case .success(let videoResponse):
+                    print("Video URL: \(videoResponse.video_url)")
+                    self.videoURL = videoResponse.video_url
+                    self.navigateToNaming = true
+                case .failure(let error):
+                    print("Error: \(error.localizedDescription)")
+                }
+            }
     }
 }
 
+struct VideoResponse: Decodable {
+    let video_url: String
+}
+
 #Preview {
-    CreateLoadingView()
+    CreateLoadingView(prompt: .constant(""))
 }

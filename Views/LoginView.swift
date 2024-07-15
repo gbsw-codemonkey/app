@@ -1,10 +1,19 @@
 import SwiftUI
+import Alamofire
 import SDWebImageSwiftUI
+
+struct LoginResponse: Decodable {
+    let status: Bool
+    let token: String?
+}
 
 struct LoginView: View {
     @State private var username: String = ""
     @State private var password: String = ""
     @State private var isLoginComplete: Bool = false
+    @State private var showAlert = false
+    @State private var alertMessage = ""
+    @AppStorage("TOKEN") private var token: String = ""
     
     var body: some View {
         VStack(spacing: 50) {
@@ -66,7 +75,7 @@ struct LoginView: View {
             
             // Button: Login
             Button(action: {
-                Login()
+                login()
             }) {
                 Text("로그인")
                     .foregroundStyle(Color.white)
@@ -84,17 +93,40 @@ struct LoginView: View {
                 .toolbar(.hidden)
         }
         .padding(.top, 100)
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Login Failed"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+        }
         .navigationDestination(isPresented: $isLoginComplete) {
             MainView()
                 .navigationBarBackButtonHidden()
         }
     }
     
-    private func Login() {
+    private func login() {
+        guard let url = URL(string: "http://localhost:3000/api/auth/login") else { return }
         
-        // Business Logic
+        let parameters: [String: Any] = [
+            "id": username,
+            "password": password
+        ]
         
-        isLoginComplete = true
+        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default).responseDecodable(of: LoginResponse.self) { response in
+            switch response.result {
+            case .success(let loginResponse):
+                if loginResponse.status, let token = loginResponse.token {
+                    
+                    self.token = token
+                    isLoginComplete = true
+                    
+                } else {
+                    self.alertMessage = "Invalid username or password"
+                    self.showAlert = true
+                }
+            case .failure:
+                self.alertMessage = "Failed to connect to server"
+                self.showAlert = true
+            }
+        }
     }
 }
 

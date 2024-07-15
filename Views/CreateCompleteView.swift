@@ -1,10 +1,3 @@
-//
-//  CreateCompleteView.swift
-//  CreativeLens
-//
-//  Created by Boseok Son on 7/11/24.
-//
-
 import SwiftUI
 import SDWebImageSwiftUI
 

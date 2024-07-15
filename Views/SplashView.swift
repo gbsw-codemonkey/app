@@ -1,15 +1,11 @@
-//
-//  SplashView.swift
-//  CreativeLens
-//
-//  Created by Boseok Son on 7/9/24.
-//
-
 import SwiftUI
+import Alamofire
 
 struct SplashView: View {
     @State private var isEnd = false
     @State private var progress = 0.0
+    @AppStorage("TOKEN") private var token: String = ""
+    @State private var navigateToMain = false
     let timer = Timer.publish(every: 0.005, on: .main, in: .common).autoconnect()
     
     var body: some View {
@@ -39,12 +35,40 @@ struct SplashView: View {
                     return
                 }
                 
+                verifyToken()
+                
                 progress = 1
                 isEnd = true
             }
             .navigationDestination(isPresented: $isEnd) {
-                StartView()
-                    .toolbar(.hidden)
+                if navigateToMain {
+                    MainView()
+                        .navigationBarBackButtonHidden()
+                } else {
+                    StartView()
+                        .toolbar(.hidden)
+                }
+            }
+        }
+    }
+    
+    private func verifyToken() {
+        guard let url = URL(string: "http://localhost:3000/api/auth/verify") else { return }
+        
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(token)"
+        ]
+        
+        AF.request(url, method: .get, headers: headers).responseDecodable(of: VerifyResponse.self) { response in
+            
+            switch response.result {
+            case .success(let verifyResponse):
+                
+                navigateToMain = verifyResponse.status
+                return
+            case .failure:
+                navigateToMain = false
+                return
             }
         }
     }

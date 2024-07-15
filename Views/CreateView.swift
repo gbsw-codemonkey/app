@@ -1,12 +1,6 @@
-//
-//  CreateView.swift
-//  CreativeLens
-//
-//  Created by Boseok Son on 7/11/24.
-//
-
 import SwiftUI
 import SDWebImageSwiftUI
+import Alamofire
 
 struct CreateView: View {
     
@@ -15,6 +9,7 @@ struct CreateView: View {
     }
     
     @State private var prompt: String = ""
+    @State private var isLoading: Bool = false
     
     var body: some View {
         VStack {
@@ -39,10 +34,11 @@ struct CreateView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .padding(.bottom, 20)
             
-            NavigationLink {
-                CreateLoadingView()
-                    .toolbar(.hidden)
-            } label: {
+            Button(action: {
+                if prompt != "" {
+                    isLoading = true
+                }
+            }) {
                 Text("만들기")
                     .foregroundStyle(Color.white)
                     .fontWeight(Font.Weight.semibold)
@@ -53,6 +49,10 @@ struct CreateView: View {
             }
             
             Spacer()
+        }
+        .navigationDestination(isPresented: $isLoading) {
+            CreateLoadingView(prompt: $prompt)
+                .toolbar(.hidden)
         }
     }
 }
